@@ -186,39 +186,10 @@ def SJF(): #@nomeprocesso;burst;tempochegada;prioridade;quantum&
       print("\t",i.nome,"\t\t\t",i.burst,"\t\t\t",i.tcheg,"\t\t\t",i.taround,"\t\t\t",i.tresposta,"\t\t\t",i.tresposta)
     contador +=1
 
-def SRTF():
-  c = input("Burst manual ou arquivo(M/A)?\n ")
-  tempoPassado = 0
-  nomeAtual = 0
-  burstAtual = 0
-  tchegAtual = 0
- 
-  def vetorTempo(processoQueEstaAgora,tempopassado):
-    for x in range(len(lista)):
-      if x == processoQueEstaAgora:
-        nomeAtual = lista[x].nome
-        burstAtual = lista[x].burst
-        tchegAtual = lista[x].tcheg
-      
-      if x != processoQueEstaAgora:
-        if (burstAtual-tchegAtual) < (lista[x].burst-lista[x].tcheg):
-          lista[nomeAtual].burst-=1
-          tempoPassado+=1
-        else:
-          vetorTempo(lista[x],int(tempoPassado))
-          
-      
-      
-  
 
-  
-  if c == "A" or c == "a":
+def preparaProcessos(arquivo):
     #burst e tempo de chegada automático
-    '''arquivo = "fcfs.txt"
-    arquivo = open(arquivo)
-    arquivo = arquivo.read()
-    arquivo = arquivo.split()'''
-    arquivo = ['@p1;15;0&','@p2;2;2&','@p3;3;5&','@p2;2;7&']
+    
     print(arquivo)
     lista = []
 
@@ -244,8 +215,50 @@ def SRTF():
         
       proc = Processo(x,burst,tchegada,taround,tresposta)
       lista.append(proc)
+    return lista
+    
+
+def RR():
+    c = input("Burst manual ou arquivo(M/A)?\n ")
+
+def SRTF():
+  c = input("Burst manual ou arquivo(M/A)?\n ")
+  tempoPassado = 0
+  atual = 0
+  lista = []
+  
+ 
+  def vetorTempo(processoQueEstaAgora,tempopassado):
+    for x in range(len(lista)): #pega o processo que esta
+        if lista[x].nome == processoQueEstaAgora:
+            atual = lista[x].nome
+            break
+    print(f'P{lista[atual].nome};{lista[atual].burst};{lista[atual].tcheg}')
+
+    
+    while lista[atual].burst != 0:
+        for x in range(len(lista)):
+            if lista[x].nome != lista[atual].nome: #nao pegar o mesmo processo
+                pass
+            break
+        break
+                    
+    
+  
+
+  
+  if c == "A" or c == "a":
+    '''arquivo = "fcfs.txt"
+    arquivo = open(arquivo)
+    arquivo = arquivo.read()
+    arquivo = arquivo.split()'''
+    arquivo = ['@p0;8;0&','@p1;2;2&','@p2;3;5&','@p3;2;7&']
+    lista = preparaProcessos(arquivo) 
+    
     lista.sort(key = operator.attrgetter("tcheg"), reverse = False)
-    vetorTempo(0,0)
+    for x in lista:
+        vetorTempo(x.nome,0)
+        break
     
     
       
