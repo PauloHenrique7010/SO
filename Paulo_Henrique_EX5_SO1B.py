@@ -102,13 +102,19 @@ def imprimirResultado(lista,tipoEscalonamento):
     while True:
       numero = 1
       for x in lista:
-        if x.burst > 0:
-          print(f'P{x.nome} -> {x.burst}')
+        if int(x.burst) > 0:
+          valorBurst = int(x.burst)
+          valorantes = x.nome
+          valorantes1 = x.burst
           while numero <=q:
-            x.burst-=1
-            numero+=1
+            if valorBurst > 0:
+              valorBurst-=1            
+              numero+=1
+            else:
+              break
           numero = 1
-          print(f'P{x.nome} -> {x.burst}')
+          x.burst = valorBurst
+          print(f'Antes p{valorantes} -> {valorantes1} \n Depois P{x.nome} -> {x.burst}\n\n')
           
         
         
@@ -142,7 +148,7 @@ def RR():
   c = input("Burst manual ou arquivo(M/A)?\n ")
   if c == "A" or c == "a":
     #burst e tempo de chegada automático
-    arquivo = "roudrobin.txt"
+    arquivo = "rr.txt"
     arquivo = open(arquivo)
     arquivo = arquivo.read()
     arquivo = arquivo.split()
