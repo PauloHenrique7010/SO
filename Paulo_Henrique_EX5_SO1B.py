@@ -34,10 +34,12 @@ import random
 import operator
 
 class Processo(object):
-  def __init__(self, nome,burst,tcheg,):
+  def __init__(self, nome,burst,tcheg,prioridade,quantum):
       self.nome = nome
       self.burst = burst
       self.tcheg = tcheg
+      self.prioridade = prioridade
+      self.quantum = quantum
   
   def setNome(nome):
     self.nome = nome
@@ -47,6 +49,12 @@ class Processo(object):
   
   def setTcheg(tcheg):
     self.tcheg = tcheg
+
+  def setPrioridade(prioridade):
+    self.prioridade = prioridade
+
+  def setQuantum(quantum):
+    self.quantum = quantum
 lista = []
 def montaListaAutomatica(arquivo):
   for x in range(len(arquivo)):      
@@ -58,8 +66,10 @@ def montaListaAutomatica(arquivo):
       nomeProcesso = processo[0] #p1
       nomeProcesso = nomeProcesso[1:]#pega apartir o p.. p2 -> 2, p23 -> 23
       burstProcesso = processo[1]
-      tChegProcesso = processo[2]     
-      proc = Processo(x,burstProcesso,tChegProcesso)
+      tChegProcesso = processo[2]
+      prioridadeProcesso = processo[3]
+      quantumProcesso = processo[4]
+      proc = Processo(x,burstProcesso,tChegProcesso,prioridadeProcesso,quantumProcesso)
       lista.append(proc)
   return lista
       
@@ -96,7 +106,32 @@ def FCFS():
     arquivo = arquivo.split()
     lista = []
     lista = montaListaAutomatica(arquivo)      
-  else:
+  else: #manual
+    lista = []
+    n = int(input("Qual a quantidade de processos?\n"))
+    #burst e tempo de chegada manual
+    for i in range(n):
+        b = int(input("P" + str(i+1) +" Burst:"))
+        t = int(input("P" + str(i+1) +" Tempo de Chegada:")) 
+        proc = Processo(i,b,t,0,0)
+        lista.append(proc)
+        
+  lista.sort(key = operator.attrgetter("tcheg"), reverse = False) #FCFS -> ordena por tempo de chegada
+  print ("Todos os processos...")
+  print ("Processo\tT.Burst\tT.Chegada\tTurnAround\tT.Resposta\tT.Espera")
+  imprimirResultado(lista,"FCFS")
+  
+def RR():
+  c = input("Burst manual ou arquivo(M/A)?\n ")
+  if c == "A" or c == "a":
+    #burst e tempo de chegada automático
+    arquivo = "fcfs.txt"
+    arquivo = open(arquivo)
+    arquivo = arquivo.read()
+    arquivo = arquivo.split()
+    lista = []
+    lista = montaListaAutomatica(arquivo)      
+  else: #manual
     lista = []
     n = int(input("Qual a quantidade de processos?\n"))
     #burst e tempo de chegada manual
@@ -105,12 +140,9 @@ def FCFS():
         t = int(input("P" + str(i+1) +" Tempo de Chegada:")) 
         proc = Processo(i,b,t)
         lista.append(proc)
-  lista.sort(key = operator.attrgetter("tcheg"), reverse = False) #FCFS -> ordena por tempo de chegada
-  print ("Todos os processos...")
-  print ("Processo\tT.Burst\tT.Chegada\tTurnAround\tT.Resposta\tT.Espera")
-  imprimirResultado(lista,"FCFS")
   
-  
+
+
 def SJF(): #@nomeprocesso;burst;tempochegada;prioridade;quantum& 
   c = input("Burst manual ou arquivo(M/A)?\n ")  
 
