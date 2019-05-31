@@ -1,3 +1,5 @@
+#terminar sjf
+#calcular tempo medio para sjf
 '''Implementar os algoritmos de escalonamento:
 1.	FCFS
 2.	SJF
@@ -69,8 +71,9 @@ def montaListaAutomatica(arquivo):
       tChegProcesso = processo[2]
       prioridadeProcesso = processo[3]
       quantumProcesso = processo[4]
-      proc = Processo(x,burstProcesso,tChegProcesso,prioridadeProcesso,quantumProcesso)
+      proc = Processo(int(x),int(burstProcesso),int(tChegProcesso),int(prioridadeProcesso),int(quantumProcesso))
       lista.append(proc)
+      
   return lista
       
 def imprimirResultado(lista,tipoEscalonamento):
@@ -79,6 +82,7 @@ def imprimirResultado(lista,tipoEscalonamento):
   tResposta = 0
   turnMedia = 0
   esperaMedia = 0
+  qtotal = 0
   if tipoEscalonamento == "FCFS":
     
     for x in lista:
@@ -96,6 +100,23 @@ def imprimirResultado(lista,tipoEscalonamento):
     print(f'TurnAround: {turnMedia/len(lista)}')
     print(f'Espera: {esperaMedia/len(lista)}')
   #FIM FCFS----------------------------------------------------------------------------------------------
+  elif tipoEscalonamento == "SJF":
+    print ("Processo\tT.Burst\tT.Chegada\tTurnAround\tT.Resposta\tT.Espera")
+    for x in lista:
+      if int(x.nome) == 0: #caso seja o primeiro processo, tempo de espera, e o tempo de chegada
+        tEspera = x.tcheg
+      else:
+        tEspera = tAround-int(x.tcheg)
+      tAround += (int(x.burst)-int(x.tcheg))
+      tResposta = tEspera #no fcfs, tempo de resposta é o mesmo de espera
+      turnMedia += tAround
+      esperaMedia += int(tEspera)
+        
+      print(int(x.nome)+1,"\t\t",x.burst,"\t",x.tcheg,"\t\t",tAround,"\t\t",tResposta,"\t\t",tEspera)
+    print('\nMédias\n')
+    print(f'TurnAround: {turnMedia/len(lista)}')
+    print(f'Espera: {esperaMedia/len(lista)}')
+  #FIM SJF----------------------------------------------------------------------------------------------
   elif tipoEscalonamento == "RR":
     q = int(lista[0].quantum)
     
@@ -114,7 +135,9 @@ def imprimirResultado(lista,tipoEscalonamento):
               break
           numero = 1
           x.burst = valorBurst
+          qtotal += q
           print(f'Antes p{valorantes} -> {valorantes1} \n Depois P{x.nome} -> {x.burst}\n\n')
+  
           
         
         
@@ -141,7 +164,6 @@ def FCFS():
         
   lista.sort(key = operator.attrgetter("tcheg"), reverse = False) #FCFS -> ordena por tempo de chegada
   print ("Todos os processos...")
-  print ("Processo\tT.Burst\tT.Chegada\tTurnAround\tT.Resposta\tT.Espera")
   imprimirResultado(lista,"FCFS")
   
 def RR():
@@ -174,42 +196,19 @@ def SJF(): #@nomeprocesso;burst;tempochegada;prioridade;quantum&
 
   if c == "A" or c == "a":
     #burst e tempo de chegada automático
-    '''arquivo = "fcfs.txt"
+    arquivo = "sjf.txt"
     arquivo = open(arquivo)
     arquivo = arquivo.read()
-    arquivo = arquivo.split()'''
-    arquivo = ['@p1;15;0&','@p2;3;0&','@p3;4;0&','@p4;8;2&']
+    arquivo = arquivo.split()
+    #arquivo = ['@p1;15;0&','@p2;3;0&','@p3;4;0&','@p4;2;1&']
     print(arquivo)
     lista = []
+    lista= montaListaAutomatica(arquivo)
 
-    for x in range(len(arquivo)):
-      prepara = arquivo[x]
-      prepara = prepara.split('@')
-      separa = prepara[1]
-      separa = separa.split('&')
-      gol = separa[0]
-      gol = gol.split(';')
-      processo = gol[0]
-      processo = int(processo[1:])
-      burst = int(gol[1])
-      tchegada = int(gol[2])
-
-      if x == 0:
-        tresposta = tchegada
-        taround = burst
-        tresposta = tchegada
-      else:
-        tresposta = taround - tchegada
-        taround += burst-tchegada
-        
-      proc = Processo(x,burst,tchegada,taround,tresposta)
-      lista.append(proc)
-
-    lista.sort(key = operator.attrgetter("burst"), reverse = False)
-    lista.sort(key = operator.attrgetter("tcheg"), reverse = False)
-      
-      
-      
+    
+    
+    
+    
   else:
     lista = []
     n = int(input("Qual a quantidade de processos?\n"))
@@ -217,31 +216,29 @@ def SJF(): #@nomeprocesso;burst;tempochegada;prioridade;quantum&
     for i in range(n):
         b = int(input("P" + str(i+1) +" Burst:"))
         t = int(input("P" + str(i+1) +" Tempo de Chegada:")) 
-        if i == 0:
-          tresposta = t
-          taround = b
-          tresposta = t
-        else:
-          tresposta = taround - t
-          taround += b-t
-          
-
-        proc = Processo(i,b,t,taround,tresposta)
+        proc = Processo(i,b,t,0,0)
         lista.append(proc)  
+  lista.sort(key = operator.attrgetter("burst"), reverse = False)
+  lista.sort(key = operator.attrgetter("tcheg"), reverse = False)
+
+
+  print('\n\n')
+  for x in lista:
+    print(int(x.nome)+1)
+  print('\noi\n')
+
   
-    lista.sort(key = operator.attrgetter("burst"), reverse = False)
-    lista.sort(key = operator.attrgetter("tcheg"), reverse = False)    
+
+
+  print('\n\n')
+  for x in lista:
+    print(int(x.nome)+1)
+  print('\n\n')
+  
 
 
   print ("Todos os processos...")
-  print ("Processo","Tempo de Burst","Tempo de chegada","TurnAround","Tempo de resposta","Tempo de Espera")
-  contador = 0
-  for i in lista:
-    if contador == 0:
-      print("\t",i.nome,"\t\t\t",i.burst,"\t\t",i.tcheg,"\t\t\t",i.taround,"\t\t\t",i.tresposta,"\t\t\t\t",i.tresposta)
-    else:
-      print("\t",i.nome,"\t\t\t",i.burst,"\t\t\t",i.tcheg,"\t\t\t",i.taround,"\t\t\t",i.tresposta,"\t\t\t",i.tresposta)
-    contador +=1
+  imprimirResultado(lista,"SJF")
 
 def SRTF():
   c = input("Burst manual ou arquivo(M/A)?\n ")
