@@ -95,6 +95,23 @@ def imprimirResultado(lista,tipoEscalonamento):
     print('\nMédias\n')
     print(f'TurnAround: {turnMedia/len(lista)}')
     print(f'Espera: {esperaMedia/len(lista)}')
+  #FIM FCFS----------------------------------------------------------------------------------------------
+  elif tipoEscalonamento == "RR":
+    q = int(lista[0].quantum)
+    
+    while True:
+      numero = 1
+      for x in lista:
+        if x.burst > 0:
+          print(f'P{x.nome} -> {x.burst}')
+          while numero <=q:
+            x.burst-=1
+            numero+=1
+          numero = 1
+          print(f'P{x.nome} -> {x.burst}')
+          
+        
+        
 
 def FCFS(): 
   c = input("Burst manual ou arquivo(M/A)?\n ")
@@ -125,7 +142,7 @@ def RR():
   c = input("Burst manual ou arquivo(M/A)?\n ")
   if c == "A" or c == "a":
     #burst e tempo de chegada automático
-    arquivo = "fcfs.txt"
+    arquivo = "roudrobin.txt"
     arquivo = open(arquivo)
     arquivo = arquivo.read()
     arquivo = arquivo.split()
@@ -133,13 +150,16 @@ def RR():
     lista = montaListaAutomatica(arquivo)      
   else: #manual
     lista = []
+    q = int(input("Qual o quantum?\n"))
     n = int(input("Qual a quantidade de processos?\n"))
     #burst e tempo de chegada manual
     for i in range(n):
         b = int(input("P" + str(i+1) +" Burst:"))
-        t = int(input("P" + str(i+1) +" Tempo de Chegada:")) 
-        proc = Processo(i,b,t)
+        t = 0
+        proc = Processo(i,b,t,0,q)
         lista.append(proc)
+  print ("Todos os processos...")
+  imprimirResultado(lista,"RR")
   
 
 
@@ -339,6 +359,7 @@ while True:
     elif esc == 4:
       pass
     elif esc == 5:
-      print('RR')
+      lista = []
+      RR()
     elif esc == 6:
       print('segundo fcfs')
