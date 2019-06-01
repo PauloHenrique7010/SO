@@ -83,7 +83,8 @@ def imprimirResultado(lista,tipoEscalonamento):
   turnMedia = 0
   esperaMedia = 0
   qtotal = 0
-  if tipoEscalonamento == "FCFS":
+  print ("Processo\tT.Burst\tT.Chegada\tTurnAround\tT.Resposta\tT.Espera")
+  if tipoEscalonamento == "FCFS/SJF":
     
     for x in lista:
       if int(x.nome) == 0: #caso seja o primeiro processo, tempo de espera, e o tempo de chegada
@@ -100,8 +101,8 @@ def imprimirResultado(lista,tipoEscalonamento):
     print(f'TurnAround: {turnMedia/len(lista)}')
     print(f'Espera: {esperaMedia/len(lista)}')
   #FIM FCFS----------------------------------------------------------------------------------------------
+  #INICIO SJF--------------------------------------------------------------------------------------------
   elif tipoEscalonamento == "SJF":
-    print ("Processo\tT.Burst\tT.Chegada\tTurnAround\tT.Resposta\tT.Espera")
     for x in lista:
       if int(x.nome) == 0: #caso seja o primeiro processo, tempo de espera, e o tempo de chegada
         tEspera = x.tcheg
@@ -155,18 +156,14 @@ def imprimirResultado(lista,tipoEscalonamento):
           qtotal += q
           print(f'Antes p{valorantes} -> {valorantes1} \n Depois P{x.nome} -> {x.burst}\n\n')
           print(f'Tempo: {qtotal}')
-          #vetorRR.append('p'+str(x.nome)+';'+str(valorantes1)+';'+str(x.burst)+';'+str(qtotal-q)+';'+str(tInicio)+';'+str(tFim))
-          vetorRR.append('p'+str(x.nome)+';'+str(tInicio)+';'+str(tFim))
+          vetorRR.append('p'+str(x.nome)+';'+str(valorantes1)+';'+str(x.burst)+';'+str(qtotal-q)+';'+str(tInicio)+';'+str(tFim))
           
         if int(x.burst) != 0:
           parar = 1
       if parar == 0:
         break
       
-    print(vetorRR)
-      
-        
-          
+    print(vetorRR)         
         
         
 
@@ -183,7 +180,6 @@ def FCFS():
   else: #manual
     lista = []
     n = int(input("Qual a quantidade de processos?\n"))
-    #burst e tempo de chegada manual
     for i in range(n):
         b = int(input("P" + str(i+1) +" Burst:"))
         t = int(input("P" + str(i+1) +" Tempo de Chegada:")) 
@@ -191,8 +187,7 @@ def FCFS():
         lista.append(proc)
         
   lista.sort(key = operator.attrgetter("tcheg"), reverse = False) #FCFS -> ordena por tempo de chegada
-  print ("Todos os processos...")
-  imprimirResultado(lista,"FCFS")
+  imprimirResultado(lista,"FCFS/SJF")
   
 def RR():
   c = input("Burst manual ou arquivo(M/A)?\n ")
@@ -214,7 +209,6 @@ def RR():
         t = 0
         proc = Processo(i,b,t,0,q)
         lista.append(proc)
-  print ("Todos os processos...")
   imprimirResultado(lista,"RR")
   
 
@@ -245,25 +239,7 @@ def SJF(): #@nomeprocesso;burst;tempochegada;prioridade;quantum&
         lista.append(proc)  
   lista.sort(key = operator.attrgetter("burst"), reverse = False)
   lista.sort(key = operator.attrgetter("tcheg"), reverse = False)
-
-
-  print('\n\n')
-  for x in lista:
-    print(int(x.nome)+1)
-  print('\noi\n')
-
-  
-
-
-  print('\n\n')
-  for x in lista:
-    print(int(x.nome)+1)
-  print('\n\n')
-  
-
-
-  print ("Todos os processos...")
-  imprimirResultado(lista,"FCFS")
+  imprimirResultado(lista,"FCFS/SJF")
 
 def SRTF():
   c = input("Burst manual ou arquivo(M/A)?\n ")
