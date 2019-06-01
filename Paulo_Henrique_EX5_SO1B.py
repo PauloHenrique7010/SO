@@ -106,38 +106,66 @@ def imprimirResultado(lista,tipoEscalonamento):
       if int(x.nome) == 0: #caso seja o primeiro processo, tempo de espera, e o tempo de chegada
         tEspera = x.tcheg
       else:
-        tEspera = tAround-int(x.tcheg)
+        if int(x.tcheg) < int(x.burst):
+          tEspera = int(x.burst) - int(x.tcheg)        
+        else:
+          tEspera = int(x.tcheg) - int(x.burst)
       tAround += (int(x.burst)-int(x.tcheg))
       tResposta = tEspera #no fcfs, tempo de resposta é o mesmo de espera
-      turnMedia += tAround
-      esperaMedia += int(tEspera)
-        
+      turnMedia += tAround      
+      esperaMedia += int(tEspera)  
       print(int(x.nome)+1,"\t\t",x.burst,"\t",x.tcheg,"\t\t",tAround,"\t\t",tResposta,"\t\t",tEspera)
     print('\nMédias\n')
     print(f'TurnAround: {turnMedia/len(lista)}')
     print(f'Espera: {esperaMedia/len(lista)}')
+
+
+
+    if t < b:
+        return b - t
+    else:
+        return t - b
   #FIM SJF----------------------------------------------------------------------------------------------
   elif tipoEscalonamento == "RR":
     q = int(lista[0].quantum)
+    tFim = 0
+    quandoComecou = 0
+    parar = 0
+    vetorRR = []#p1;burstquandoentrou;burstquandosaiu
     
     while True:
       numero = 1
+      parar = 0
       for x in lista:
+        
         if int(x.burst) > 0:
           valorBurst = int(x.burst)
           valorantes = x.nome
           valorantes1 = x.burst
+          tInicio = tFim
           while numero <=q:
             if valorBurst > 0:
               valorBurst-=1            
               numero+=1
+              tFim+=1
             else:
               break
           numero = 1
           x.burst = valorBurst
           qtotal += q
           print(f'Antes p{valorantes} -> {valorantes1} \n Depois P{x.nome} -> {x.burst}\n\n')
-  
+          print(f'Tempo: {qtotal}')
+          #vetorRR.append('p'+str(x.nome)+';'+str(valorantes1)+';'+str(x.burst)+';'+str(qtotal-q)+';'+str(tInicio)+';'+str(tFim))
+          vetorRR.append('p'+str(x.nome)+';'+str(tInicio)+';'+str(tFim))
+          
+        if int(x.burst) != 0:
+          parar = 1
+      if parar == 0:
+        break
+      
+    print(vetorRR)
+      
+        
           
         
         
@@ -203,10 +231,7 @@ def SJF(): #@nomeprocesso;burst;tempochegada;prioridade;quantum&
     #arquivo = ['@p1;15;0&','@p2;3;0&','@p3;4;0&','@p4;2;1&']
     print(arquivo)
     lista = []
-    lista= montaListaAutomatica(arquivo)
-
-    
-    
+    lista= montaListaAutomatica(arquivo)    
     
     
   else:
@@ -238,7 +263,7 @@ def SJF(): #@nomeprocesso;burst;tempochegada;prioridade;quantum&
 
 
   print ("Todos os processos...")
-  imprimirResultado(lista,"SJF")
+  imprimirResultado(lista,"FCFS")
 
 def SRTF():
   c = input("Burst manual ou arquivo(M/A)?\n ")
