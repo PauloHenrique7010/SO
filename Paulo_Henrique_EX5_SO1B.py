@@ -75,6 +75,23 @@ def montaListaAutomatica(arquivo):
       lista.append(proc)
       
   return lista
+def tAroundRR(vetorRR):
+  vetor = []
+  for x in range(len(vetorRR)):
+    pass
+
+def desmonta(linha): #recebe nprocesso;burstprocesso sem o P-> 0;8
+  linha = linha.split(';')
+  numeroProcesso = int(linha[0])
+  return numeroProcesso
+
+def formaABostaDoNumero(palavra):
+  string = ''
+  for x in palavra:
+    string += x
+  return string
+    
+    
       
 def imprimirResultado(lista,tipoEscalonamento):
   tAround = 0
@@ -109,7 +126,19 @@ def imprimirResultado(lista,tipoEscalonamento):
     quandoComecou = 0
     parar = 0
     vetorRR = []#p1;burstquandoentrou;burstquandosaiu
+    tamanhoVetor = 0
     
+    vetorComEntrada = [] #recebe os valores onde cada processo começou
+    nProcessoStr = ''
+    nProcessoInt = 0
+    bProcesso = 0
+    vetorAuxiliar = []
+    vetorRRResposta = []
+    vetorCopiaBurst = []
+
+    for x in lista: #faz uma copia do burst para imprimir nos resultados, durante o codigo o burst é zerado
+      vetorCopiaBurst.append(x.burst)
+      
     while True:
       numero = 1
       parar = 0
@@ -130,18 +159,171 @@ def imprimirResultado(lista,tipoEscalonamento):
           numero = 1
           x.burst = valorBurst
           qtotal += q
-          print(f'Antes p{valorantes} -> {valorantes1} \n Depois P{x.nome} -> {x.burst}\n\n')
-          print(f'Tempo: {qtotal}')
-          vetorRR.append('p'+str(x.nome)+';'+str(valorantes1)+';'+str(x.burst)+';'+str(qtotal-q)+';'+str(tInicio)+';'+str(tFim))
+         
+          vetorRR.append('p'+str(x.nome)+';'+str(tInicio)+';'+str(tFim))
+          #Pra pegar os registro de espera, pega o len do vetor, e retorna neste intervalo, o tInicio de cada um => 0,7,14,21 [resposta] 
+          
           
         if int(x.burst) != 0:
           parar = 1
       if parar == 0:
         break
+    
+    #TempoResposta - inicio
+    #pega a quantidade de processos
+    for x in lista:
+      if int(x.nome) > tamanhoVetor:
+        tamanhoVetor = int(x.nome)
+
+
+        
+    for x in range(len(vetorRR)):
+        palavra = vetorRR[x].split(';')
+        nProcessoStr = palavra[0]
+        nProcessoInt = int(nProcessoStr[1:])
+        bProcesso = palavra[1]
+
+        if nProcessoInt not in vetorAuxiliar:
+          vetorAuxiliar.append(nProcessoInt)
+        
+        
+    for x in range(len(vetorRR)):
+        palavra = vetorRR[x].split(';')
+        nProcessoStr = palavra[0]
+        nProcessoInt = int(nProcessoStr[1:])
+        bProcesso = palavra[1]  
+        vetorRRResposta.append(str(nProcessoInt)+';'+str(bProcesso))
+        vetorAuxiliar.remove(nProcessoInt)
+        if len(vetorAuxiliar) == 0:
+          break
+
+    #TempoResposta - Fim
+
+    #Turnaround - inicio
+    vetorRRTurnAround = []  
+    turnRR = 0
+    for y in range(tamanhoVetor+1):
+      for x in range(len(vetorRR)):
+          palavra = vetorRR[x].split(';')
+          nProcessoStr = palavra[0]
+          nProcessoInt = int(nProcessoStr[1:])
+          bProcesso = palavra[1]
+          tProcesso = palavra[2]
+          if y == nProcessoInt:
+            turnRR = tProcesso
+      vetorRRTurnAround.append(turnRR)
+
       
-    print(vetorRR)
+    
+    #turnaround -fim
+
+    #temporesposta - inicio
+    vetorRREspera = []
+    palavra = ''
+    respostaStr = ''    
+    respostaInt = 0
+    respostaInt1 = 0
+    esperaFinal = 0
+    turnRR = 0
+    bAntigo = 0
+    tAntigo = 0
+    posicaoAnterior = 0
+    mostrar = True
+ 
+    
+    for y in range(tamanhoVetor+1):
+      palavra = vetorRRResposta[y].split(';')
+      respostaStr = palavra[1:]
+      respostaInt = int(formaABostaDoNumero(respostaStr))
+      esperaFinal = respostaInt
+ 
+      for x in range(len(vetorRR)):
+          palavra = vetorRR[x].split(';')
+          nProcessoStr = palavra[0]
+          nProcessoInt = int(nProcessoStr[1:])          
+          bProcesso = palavra[1]
+          tProcesso = palavra[2]
+
+          palavra = vetorRR[posicaoAnterior].split(';')
+          nProcessoStr = palavra[0]
+          nProcessoInt1 = int(nProcessoStr[1:])
+          bAntigo = palavra[1]
+          tAntigo = palavra[2]          
+          
+          if y == nProcessoInt:
+              if x > 0 and y == 0:                                  
+                esperaFinal += (int(bProcesso) - int(tAntigo))
+              elif x > 0 and y > 0:
+                if mostrar:
+                  esperaFinal += (int(bProcesso) - int(tAntigo))
+                mostrar = True
+      
+              posicaoAnterior = x
+      mostrar = False
+      
+      vetorRREspera.append(esperaFinal)
+      esperaFinal = 0
+      
+    #tempoespera - fim
+    espera = 0
+    resposta = 0
+    turnAround = 0
+    turnMedia = 0
+    esperaMedia = 0
+    for x in range(len(lista)):
+      espera = vetorRREspera[x]
+      resposta = vetorRRResposta[x]
+      resposta = resposta.split(';')[1]
+      burst = vetorCopiaBurst[x]
+      turnAround = vetorRRTurnAround[x]
+      print(int(lista[x].nome)+1,"\t\t",burst,"\t",lista[x].tcheg,"\t\t",turnAround,"\t\t",resposta,"\t\t",espera)
+      turnMedia += int(turnAround)
+      esperaMedia += espera
+
+    
+    print('\nMédias\n')
+    print(f'TurnAround: {turnMedia/len(lista)}')
+    print(f'Espera: {esperaMedia/len(lista)}')  
+
     #FIM RR---------------------------------------------------------------------------------------------------------------------------------
     #INICIO SRTF----------------------------------------------------------------------------------------------------------------------------
+  elif tipoEscalonamento == "SRTF":
+    for x in lista:
+      print(x.nome)
+    while True:
+      numero = 1
+      parar = 0
+      for x in lista:
+        print (x.nome)
+        
+        ''''if int(x.burst) > 0:
+          valorBurst = int(x.burst)
+        
+          i
+            if valorBurst > 0:
+              valorBurst-=1            
+              numero+=1
+              tFim+=1
+            else:
+              break
+          numero = 1
+          x.burst = valorBurst
+          qtotal += q
+          print(f'Antes p{valorantes} -> {valorantes1} \n Depois P{x.nome} -> {x.burst}\n\n')
+          print(f'Tempo: {qtotal}')
+          #vetorRR.append('p'+str(x.nome)+';'+str(valorantes1)+';'+str(x.burst)+';'+str(qtotal-q)+';'+str(tInicio)+';'+str(tFim))
+          vetorRR.append('p'+str(x.nome)+';'+str(tInicio)+';'+str(tFim))
+          #Pra pegar os registro de espera, pega o len do vetor, e retorna neste intervalo, o tInicio de cada um => 0,7,14,21 [resposta] '''
+          
+          
+        '''if int(x.burst) != 0:
+          parar = 1'''
+      if parar == 0:
+        break
+  
+    #FIM SRTF-------------------------------------------------------------------------------------------------------------------------------
+
+    
         
         
 
@@ -193,6 +375,25 @@ def SJF(): #@nomeprocesso;burst;tempochegada;prioridade;quantum&
   lista.sort(key = operator.attrgetter("tcheg"), reverse = False)
   imprimirResultado(lista,"FCFS/SJF")
 
+def seila(numeroProcesso, burstProcesso):
+  '''@p1;8;0;0;0&
+  @p2;4;1;0;0&
+  @p3;9;2;0;0&
+  @p4;5;3;0;0&'''
+  tempoCronos = 0
+  
+  while True:
+    tempoCronos +=1
+    burstProc = 0
+    nProcessoMenor = 0 #numero do processo que é menor que o atual
+    bProcessoMenor = 0 #burst do processo que e menor que o atual
+    temMenor = False
+    
+    break
+      
+      
+        
+
 def SRTF():
   c = input("Burst manual ou arquivo(M/A)?\n ")
   if c == "A" or c == "a":
@@ -212,6 +413,9 @@ def SRTF():
         lista.append(proc)
         
   lista.sort(key = operator.attrgetter("tcheg"), reverse = False) #FCFS -> ordena por tempo de chegada
+  for x in lista:
+    seila(int(x.nome),int(x.burst))
+    break
   imprimirResultado(lista,"SRTF")
 
 
