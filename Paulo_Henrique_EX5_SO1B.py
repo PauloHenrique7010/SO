@@ -1,5 +1,3 @@
-#terminar sjf
-#calcular tempo medio para sjf
 '''Implementar os algoritmos de escalonamento:
 1.	FCFS
 2.	SJF
@@ -75,17 +73,13 @@ def montaListaAutomatica(arquivo):
       lista.append(proc)
       
   return lista
-def tAroundRR(vetorRR):
-  vetor = []
-  for x in range(len(vetorRR)):
-    pass
 
 def desmonta(linha): #recebe nprocesso;burstprocesso sem o P-> 0;8
   linha = linha.split(';')
   numeroProcesso = int(linha[0])
   return numeroProcesso
 
-def formaABostaDoNumero(palavra):
+def converteVetor(palavra):
   string = ''
   for x in palavra:
     string += x
@@ -217,14 +211,13 @@ def imprimirResultado(lista,tipoEscalonamento):
     
     #turnaround -fim
 
-    #temporesposta - inicio
+    #tempoEspera - inicio
     vetorRREspera = []
     palavra = ''
     respostaStr = ''    
     respostaInt = 0
     respostaInt1 = 0
     esperaFinal = 0
-    turnRR = 0
     bAntigo = 0
     tAntigo = 0
     posicaoAnterior = 0
@@ -234,7 +227,7 @@ def imprimirResultado(lista,tipoEscalonamento):
     for y in range(tamanhoVetor+1):
       palavra = vetorRRResposta[y].split(';')
       respostaStr = palavra[1:]
-      respostaInt = int(formaABostaDoNumero(respostaStr))
+      respostaInt = int(converteVetor(respostaStr))
       esperaFinal = respostaInt
  
       for x in range(len(vetorRR)):
@@ -265,6 +258,8 @@ def imprimirResultado(lista,tipoEscalonamento):
       esperaFinal = 0
       
     #tempoespera - fim
+      
+    #imprimir
     espera = 0
     resposta = 0
     turnAround = 0
@@ -375,7 +370,7 @@ def SJF(): #@nomeprocesso;burst;tempochegada;prioridade;quantum&
   lista.sort(key = operator.attrgetter("tcheg"), reverse = False)
   imprimirResultado(lista,"FCFS/SJF")
 
-def seila(numeroProcesso, burstProcesso):
+def recursaoSRTF(numeroProcesso, burstProcesso):
   '''@p1;8;0;0;0&
   @p2;4;1;0;0&
   @p3;9;2;0;0&
@@ -414,7 +409,7 @@ def SRTF():
         
   lista.sort(key = operator.attrgetter("tcheg"), reverse = False) #FCFS -> ordena por tempo de chegada
   for x in lista:
-    seila(int(x.nome),int(x.burst))
+    recursaoSRTF(int(x.nome),int(x.burst))
     break
   imprimirResultado(lista,"SRTF")
 
